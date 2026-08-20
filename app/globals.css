@@ -3,161 +3,31 @@
 @import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-:root {
-  color-scheme: light;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  color-scheme: dark;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    color-scheme: dark;
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-card: var(--card); --color-card-foreground: var(--card-foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring); --color-destructive: var(--destructive); --font-sans: 'DM Sans', sans-serif; --font-mono: 'IBM Plex Mono', monospace; --radius-lg: 0.75rem; --radius-xl: 1rem; }
+:root { color-scheme: light; --background: #f5f7f8; --foreground: #16252b; --card: #ffffff; --card-foreground: #16252b; --primary: #0f6870; --primary-foreground: #f5ffff; --muted: #e9eef0; --muted-foreground: #6e7d82; --border: #dce4e6; --input: #ffffff; --ring: #4fa8a6; --destructive: #b74646; }
+* { @apply border-border outline-ring/50; }
+body { @apply bg-background text-foreground font-sans; }
+.brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: #f5ffff; background: #0f6870; box-shadow: 0 5px 14px #0f687033; }
+.online-dot { width: 7px; height: 7px; border-radius: 999px; background: #4fa8a6; box-shadow: 0 0 0 3px #4fa8a622; }
+.eyebrow { display: flex; align-items: center; gap: 7px; color: #6e7d82; font: 600 10px/1 'IBM Plex Mono', monospace; letter-spacing: .16em; }
+.eyebrow > span { width: 14px; height: 1px; background: #4fa8a6; }
+.query-panel, .summary-card, .side-card { border: 1px solid #dce4e6; background: #fff; border-radius: 14px; padding: 22px; box-shadow: 0 10px 30px #16252b08; }
+.query-panel { background: linear-gradient(135deg, #fff 0%, #f0f7f7 100%); }
+.secure-chip { display: flex; align-items: center; gap: 5px; color: #0f6870; font: 600 10px/1 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .08em; }
+.cnpj-input { width: 100%; height: 48px; border: 1px solid #cddbdd; border-radius: 9px; background: #fff; padding: 0 15px; color: #16252b; font: 500 16px 'IBM Plex Mono', monospace; outline: none; transition: box-shadow .2s,border .2s; }
+.cnpj-input:focus { border-color: #4fa8a6; box-shadow: 0 0 0 4px #4fa8a622; }
+.primary-button, .secondary-button, .action-button, .icon-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: all .2s; }
+.primary-button { height: 48px; background: #0f6870; color: #f5ffff; padding: 0 18px; box-shadow: 0 6px 14px #0f687026; }
+.primary-button:hover, .primary-action:hover { background: #0b555c; transform: translateY(-1px); }
+.secondary-button { height: 38px; border: 1px solid #dce4e6; background: #fff; color: #35545b; }
+.secondary-button:hover, .icon-button:hover, .action-button:hover { background: #f0f7f7; border-color: #a9c8c9; }
+.document-card { display: flex; align-items: center; gap: 16px; min-height: 92px; padding: 16px 18px 16px 12px; border: 1px solid #dce4e6; border-radius: 12px; background: #fff; box-shadow: 0 5px 18px #16252b05; transition: border .2s,transform .2s; }
+.document-card:hover { border-color: #a9c8c9; transform: translateX(2px); }
+.waiting-card { border-color: #decf9d; background: #fffdf5; }
+.number-cell { width: 34px; color: #a2b1b4; text-align: center; font: 500 11px 'IBM Plex Mono', monospace; }
+.status-pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 5px 8px; font: 600 10px 'IBM Plex Mono', monospace; }
+.status-neutral { color: #6e7d82; background: #eef2f3; }.status-blue { color: #246d99; background: #e4f2fb; }.status-amber { color: #95711c; background: #fff3cf; }.status-green { color: #29735e; background: #e0f3ed; }.status-red { color: #a34a4a; background: #fbe7e5; }
+.action-button { height: 34px; border: 1px solid #dce4e6; color: #49636a; padding: 0 10px; }.primary-action { border-color: #0f6870; background: #0f6870; color: #f5ffff; }.icon-button { width: 34px; height: 34px; border: 1px solid #dce4e6; color: #668087; background: #fff; }
+.progress-track { height: 7px; overflow: hidden; border-radius: 999px; background: #e9eef0; }.progress-track > div { height: 100%; border-radius: inherit; background: #4fa8a6; transition: width .4s ease; }
+.notice-card { display: flex; gap: 10px; border: 1px solid #decf9d; border-radius: 12px; background: #fff8df; padding: 16px; color: #806719; font-size: 12px; line-height: 1.55; }.notice-card svg { flex: 0 0 auto; margin-top: 2px; }
+@media (max-width: 640px) { .document-card { align-items: flex-start; flex-wrap: wrap; }.document-card > .flex:last-child { margin-left: 50px; }.number-cell { width: 24px; }.primary-button { width: 100%; } }
