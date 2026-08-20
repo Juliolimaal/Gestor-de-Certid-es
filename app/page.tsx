@@ -55,6 +55,14 @@ export default function Page() {
     }, 900)
   }
 
+  function openOfficialPortal(url: string) {
+    const portalWindow = window.open(url, '_blank', 'noopener,noreferrer')
+    if (!portalWindow) {
+      setExportMessage('O navegador bloqueou a nova aba. Permita pop-ups para abrir o portal oficial.')
+      window.setTimeout(() => setExportMessage(''), 5000)
+    }
+  }
+
   function openCaptcha() {
     setCaptchaCode('')
     setCaptchaOpen(true)
@@ -97,7 +105,7 @@ export default function Page() {
           </div>
 
           <div className="mb-4 flex items-end justify-between"><div><div className="eyebrow"><span /> DOCUMENTOS</div><h2 className="mt-2 text-xl font-semibold tracking-tight">Painel de regularidade</h2></div><div className="text-right"><p className="font-mono text-2xl font-semibold">{completed}<span className="text-muted-foreground">/06</span></p><p className="text-xs text-muted-foreground">prontos</p></div></div>
-          <div className="space-y-3">{documents.map((document, index) => <DocumentCard key={document.id} document={document} index={index} onAction={() => simulateDocument(document.id)} />)}</div>
+          <div className="space-y-3">{documents.map((document, index) => <DocumentCard key={document.id} document={document} index={index} onAction={() => simulateDocument(document.id)} onOpenPortal={() => openOfficialPortal(document.url)} />)}</div>
         </section>
 
         <aside className="space-y-4 lg:pt-[92px]">
@@ -122,8 +130,8 @@ export default function Page() {
   )
 }
 
-function DocumentCard({ document, index, onAction }: { document: DocumentItem; index: number; onAction: () => void }) {
+function DocumentCard({ document, index, onAction, onOpenPortal }: { document: DocumentItem; index: number; onAction: () => void; onOpenPortal: () => void }) {
   const tone = toneClasses[statusTone[document.status]]
   const isActive = !['pending', 'consulting'].includes(document.status)
-  return <article className={`document-card ${document.status === 'waiting' ? 'waiting-card' : ''}`}><div className="number-cell">0{index + 1}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-semibold tracking-tight">{document.shortName}</h3><span className={`status-pill ${tone}`}>{document.status === 'consulting' && <LoaderCircle size={12} className="animate-spin" />}{document.status === 'regular' && <Check size={12} />}{statusLabels[document.status]}</span></div><p className="mt-1 truncate text-sm text-muted-foreground">{document.name} · {document.issuer}</p><p className="mt-2 text-xs text-muted-foreground">{document.detail}{document.validUntil && ` · validade ${document.validUntil}`}</p></div><div className="flex shrink-0 items-center gap-2">{document.status === 'waiting' ? <button className="action-button primary-action" onClick={onAction}>Continuar <ChevronRight size={14} /></button> : isActive ? <><button className="icon-button" title="Abrir portal oficial" aria-label="Abrir portal oficial"><ArrowUpRight size={16} /></button><button className="icon-button" title="Consultar novamente" aria-label="Consultar novamente" onClick={onAction}><RotateCcw size={15} /></button></> : <button className="action-button" onClick={onAction}>Consultar <ChevronRight size={14} /></button>}</div></article>
+  return <article className={`document-card ${document.status === 'waiting' ? 'waiting-card' : ''}`}><div className="number-cell">0{index + 1}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-semibold tracking-tight">{document.shortName}</h3><span className={`status-pill ${tone}`}>{document.status === 'consulting' && <LoaderCircle size={12} className="animate-spin" />}{document.status === 'regular' && <Check size={12} />}{statusLabels[document.status]}</span></div><p className="mt-1 truncate text-sm text-muted-foreground">{document.name} · {document.issuer}</p><p className="mt-2 text-xs text-muted-foreground">{document.detail}{document.validUntil && ` · validade ${document.validUntil}`}</p></div><div className="flex shrink-0 items-center gap-2">{document.status === 'waiting' ? <button className="action-button primary-action" onClick={onAction}>Continuar <ChevronRight size={14} /></button> : isActive ? <><button className="icon-button" title="Abrir portal oficial" aria-label={`Abrir portal oficial: ${document.issuer}`} onClick={onOpenPortal}><ArrowUpRight size={16} /></button><button className="icon-button" title="Consultar novamente" aria-label="Consultar novamente" onClick={onAction}><RotateCcw size={15} /></button></> : <button className="action-button" onClick={onAction}>Consultar <ChevronRight size={14} /></button>}</div></article>
 }
