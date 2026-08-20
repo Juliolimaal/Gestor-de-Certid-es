@@ -12,6 +12,8 @@ export default function Page() {
   const [documents, setDocuments] = useState<DocumentItem[]>(initialDocuments)
   const [hasSearched, setHasSearched] = useState(false)
   const [error, setError] = useState('')
+  const [captchaOpen, setCaptchaOpen] = useState(false)
+  const [captchaCode, setCaptchaCode] = useState('')
   const completed = documents.filter((item) => ['obtained', 'regular'].includes(item.status)).length
   const progress = hasSearched ? Math.round((documents.filter((item) => item.status !== 'pending').length / documents.length) * 100) : 0
   const cnpjDigits = useMemo(() => normalizeCnpj(cnpj), [cnpj])
@@ -29,7 +31,22 @@ export default function Page() {
     }, 900)
   }
 
+  function openCaptcha() {
+    setCaptchaCode('')
+    setCaptchaOpen(true)
+  }
+
+  function completeCaptcha() {
+    if (captchaCode.trim().length < 4) return
+    setCaptchaOpen(false)
+    setDocuments((current) => current.map((item) => item.id === 'tst' ? { ...item, status: 'regular', detail: 'CAPTCHA resolvido manualmente · documento pronto para revisão', validUntil: '30/09/2026' } : item))
+  }
+
   function simulateDocument(id: string) {
+    if (id === 'tst' && documents.find((item) => item.id === id)?.status === 'waiting') {
+      openCaptcha()
+      return
+    }
     setDocuments((current) => current.map((item) => item.id === id ? { ...item, status: 'consulting', detail: 'Abrindo portal oficial em modo assistido' } : item))
     window.setTimeout(() => setDocuments((current) => current.map((item) => item.id === id ? { ...item, status: id === 'tst' ? 'waiting' : 'regular', detail: id === 'tst' ? 'Resolva o CAPTCHA no navegador visível e continue' : 'Documento simulado pronto para revisão', validUntil: id === 'tst' ? undefined : '30/09/2026' } : item)), 800)
   }
@@ -67,6 +84,15 @@ export default function Page() {
         </aside>
       </div>
       <footer className="border-t border-border/70"><div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-6 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between lg:px-10"><span>Dados processados localmente · sem envio para terceiros</span><span className="font-mono">v0.1.0 / simulador</span></div></footer>
+      {captchaOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="captcha-title">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl">
+          <div className="flex items-start justify-between gap-4"><div><div className="eyebrow"><span /> INTERVENÇÃO MANUAL</div><h2 id="captcha-title" className="mt-3 text-xl font-semibold">Resolva o CAPTCHA do TST</h2></div><button className="icon-button" aria-label="Fechar CAPTCHA" onClick={() => setCaptchaOpen(false)}>×</button></div>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">O navegador oficial está aguardando sua confirmação. Neste simulador, informe o código exibido no portal para continuar.</p>
+          <div className="mt-5 rounded-xl border border-dashed border-primary/50 bg-primary/5 px-5 py-6 text-center"><p className="font-mono text-2xl font-bold tracking-[0.35em] text-primary">TST-4821</p><p className="mt-2 text-xs text-muted-foreground">código demonstrativo do portal visível</p></div>
+          <label className="mt-5 block"><span className="mb-2 block text-xs font-medium text-muted-foreground">Código do CAPTCHA</span><input aria-label="Código do CAPTCHA" autoFocus value={captchaCode} onChange={(event) => setCaptchaCode(event.target.value.toUpperCase())} placeholder="Digite TST-4821" className="cnpj-input" /></label>
+          <div className="mt-5 flex justify-end gap-2"><button className="secondary-button" onClick={() => setCaptchaOpen(false)}>Cancelar</button><button className="primary-button" disabled={captchaCode.trim().length < 4} onClick={completeCaptcha}>Continuar <ChevronRight size={16} /></button></div>
+        </div>
+      </div>}
     </main>
   )
 }
