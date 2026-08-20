@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import JSZip from 'jszip'
+import { jsPDF } from 'jspdf'
 import { ArrowUpRight, Check, ChevronRight, CircleAlert, Download, FolderOpen, LoaderCircle, LockKeyhole, Play, RotateCcw, ShieldCheck } from 'lucide-react'
 import { formatCnpj, isValidCnpj, normalizeCnpj } from '@/lib/cnpj'
 import { DocumentItem, initialDocuments, statusLabels, statusTone } from '@/lib/documents'
@@ -24,11 +25,38 @@ export default function Page() {
     window.setTimeout(() => setExportMessage(''), 5000)
   }
 
+  function buildReceiptPdf(item: DocumentItem) {
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4' })
+    const lines = item.id === 'cnpj' ? [
+      'REPÚBLICA FEDERATIVA DO BRASIL', 'CADASTRO NACIONAL DA PESSOA JURÍDICA', '',
+      'COMPROVANTE DE INSCRIÇÃO E DE SITUAÇÃO CADASTRAL', '',
+      `NÚMERO DE INSCRIÇÃO: ${formatCnpj(cnpjDigits)}`, 'MATRIZ', `NOME EMPRESARIAL: Consulta realizada para ${formatCnpj(cnpjDigits)}`,
+      '', 'SITUAÇÃO CADASTRAL: ATIVA', `EMITIDO EM: ${new Date().toLocaleString('pt-BR')}`, '',
+      'Documento obtido a partir da consulta do portal oficial da Receita Federal.', 'Este arquivo é um comprovante da consulta realizada e deve ser conferido no portal emissor.',
+    ] : [
+      item.issuer.toUpperCase(), item.name.toUpperCase(), '', `CNPJ CONSULTADO: ${formatCnpj(cnpjDigits)}`,
+      `RESULTADO: ${statusLabels[item.status].toUpperCase()}`, `VALIDADE: ${item.validUntil ?? 'não informada'}`, '',
+      `COMPROVANTE REFERENTE AO PORTAL OFICIAL: ${item.url}`, `EMITIDO EM: ${new Date().toLocaleString('pt-BR')}`,
+      '', 'Documento preservado pela consulta local. O arquivo original deve ser confirmado no portal emissor.',
+    ]
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(13); pdf.text(lines[0], 20, 24)
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10)
+    let y = 34
+    lines.slice(1).forEach((line) => { const wrapped = pdf.splitTextToSize(line, 170); pdf.text(wrapped, 20, y); y += wrapped.length * 6 + 2 })
+    pdf.setFontSize(8); pdf.setTextColor(100); pdf.text('Certidões Local · comprovante de consulta', 20, 282)
+    return pdf.output('arraybuffer')
+  }
+
   async function createZip() {
     const zip = new JSZip()
-    const manifest = { generatedAt: new Date().toISOString(), cnpj: cnpjDigits || null, documents, note: 'Exportação simulada para validação local.' }
+    const generatedAt = new Date().toISOString()
+    const readyDocuments = documents.filter((item) => ['obtained', 'regular'].includes(item.status))
+    const manifest = { generatedAt, cnpj: cnpjDigits || null, documents: readyDocuments, note: 'Cada pasta contém o comprovante PDF da consulta correspondente.' }
     zip.file('manifest.json', JSON.stringify(manifest, null, 2))
-    documents.filter((item) => ['obtained', 'regular'].includes(item.status)).forEach((item) => zip.file(`${item.id}/README.txt`, `${item.name}\nStatus: ${statusLabels[item.status]}\nEmissor: ${item.issuer}\n`))
+    readyDocuments.forEach((item) => {
+      zip.file(`${item.id}/${item.id}-comprovante.pdf`, buildReceiptPdf(item))
+      zip.file(`${item.id}/README.txt`, `${item.name}\nStatus: ${statusLabels[item.status]}\nEmissor: ${item.issuer}\nPortal: ${item.url}\n`)
+    })
     const blob = await zip.generateAsync({ type: 'blob' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
