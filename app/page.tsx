@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import JSZip from 'jszip'
 import { ArrowUpRight, Check, ChevronRight, CircleAlert, Download, FolderOpen, LoaderCircle, LockKeyhole, Play, RotateCcw, ShieldCheck } from 'lucide-react'
 import { formatCnpj, isValidCnpj, normalizeCnpj } from '@/lib/cnpj'
 import { DocumentItem, initialDocuments, statusLabels, statusTone } from '@/lib/documents'
@@ -14,7 +15,30 @@ export default function Page() {
   const [error, setError] = useState('')
   const [captchaOpen, setCaptchaOpen] = useState(false)
   const [captchaCode, setCaptchaCode] = useState('')
+  const [exportMessage, setExportMessage] = useState('')
   const completed = documents.filter((item) => ['obtained', 'regular'].includes(item.status)).length
+
+  function openConsultationFolder() {
+    const folder = `documentos/${cnpjDigits || 'CNPJ'}/AAAA-MM-DD_HH-mm-ss/`
+    setExportMessage(`A pasta será aberta no aplicativo desktop: ${folder}`)
+    window.setTimeout(() => setExportMessage(''), 5000)
+  }
+
+  async function createZip() {
+    const zip = new JSZip()
+    const manifest = { generatedAt: new Date().toISOString(), cnpj: cnpjDigits || null, documents, note: 'Exportação simulada para validação local.' }
+    zip.file('manifest.json', JSON.stringify(manifest, null, 2))
+    documents.filter((item) => ['obtained', 'regular'].includes(item.status)).forEach((item) => zip.file(`${item.id}/README.txt`, `${item.name}\nStatus: ${statusLabels[item.status]}\nEmissor: ${item.issuer}\n`))
+    const blob = await zip.generateAsync({ type: 'blob' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `certidoes-${cnpjDigits || 'consulta'}.zip`
+    link.click()
+    URL.revokeObjectURL(url)
+    setExportMessage('ZIP gerado e baixado pelo navegador.')
+    window.setTimeout(() => setExportMessage(''), 5000)
+  }
   const progress = hasSearched ? Math.round((documents.filter((item) => item.status !== 'pending').length / documents.length) * 100) : 0
   const cnpjDigits = useMemo(() => normalizeCnpj(cnpj), [cnpj])
 
@@ -78,9 +102,10 @@ export default function Page() {
 
         <aside className="space-y-4 lg:pt-[92px]">
           <div className="summary-card"><div className="flex items-center justify-between"><span className="eyebrow"><span /> PROGRESSO</span><span className="font-mono text-sm font-semibold">{progress}%</span></div><div className="progress-track mt-5"><div style={{ width: `${progress}%` }} /></div><p className="mt-4 text-sm leading-6 text-muted-foreground">{hasSearched ? 'O simulador mantém cada portal independente. Uma falha não interrompe os demais.' : 'Comece uma consulta para acompanhar os documentos individualmente.'}</p></div>
-          <div className="side-card"><div className="flex items-center gap-2"><FolderOpen size={16} className="text-primary" /><p className="font-semibold">Pasta da consulta</p></div><p className="mt-2 break-all font-mono text-[11px] leading-5 text-muted-foreground">documentos/{cnpjDigits || 'CNPJ'}/AAAA-MM-DD_HH-mm-ss/</p><button className="secondary-button mt-5 w-full"><FolderOpen size={15} /> Abrir pasta</button></div>
-          <div className="side-card"><p className="font-semibold">Ao concluir</p><p className="mt-2 text-sm leading-6 text-muted-foreground">Gere um ZIP com os documentos originais e o manifest de auditoria.</p><button className="secondary-button mt-5 w-full"><Download size={15} /> Gerar arquivo ZIP</button></div>
+          <div className="side-card"><div className="flex items-center gap-2"><FolderOpen size={16} className="text-primary" /><p className="font-semibold">Pasta da consulta</p></div><p className="mt-2 break-all font-mono text-[11px] leading-5 text-muted-foreground">documentos/{cnpjDigits || 'CNPJ'}/AAAA-MM-DD_HH-mm-ss/</p><button className="secondary-button mt-5 w-full" onClick={openConsultationFolder}><FolderOpen size={15} /> Abrir pasta</button></div>
+          <div className="side-card"><p className="font-semibold">Ao concluir</p><p className="mt-2 text-sm leading-6 text-muted-foreground">Gere um ZIP com os documentos originais e o manifest de auditoria.</p><button className="secondary-button mt-5 w-full" onClick={createZip}><Download size={15} /> Gerar arquivo ZIP</button></div>
           <div className="notice-card"><CircleAlert size={17} /><p><strong>Intervenção manual</strong><br />CAPTCHA e etapas adicionais sempre acontecem em navegador visível.</p></div>
+          {exportMessage && <div className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-xs leading-5 text-primary" role="status">{exportMessage}</div>}
         </aside>
       </div>
       <footer className="border-t border-border/70"><div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-6 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between lg:px-10"><span>Dados processados localmente · sem envio para terceiros</span><span className="font-mono">v0.1.0 / simulador</span></div></footer>
